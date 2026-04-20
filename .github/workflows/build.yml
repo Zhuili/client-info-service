@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: windows-latest
@@ -33,7 +34,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install pyinstaller fastapi "uvicorn[standard]" psutil netifaces
+        run: pip install pyinstaller fastapi uvicorn psutil
 
       - name: Install pywin32 (Windows only)
         if: runner.os == 'Windows'
