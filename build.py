@@ -6,6 +6,9 @@
 import subprocess, platform, zipfile, sys
 from pathlib import Path
 
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+
 OS   = platform.system()
 NAME = {
     "Windows": "client-info-setup.exe",
