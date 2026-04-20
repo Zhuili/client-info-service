@@ -6,8 +6,18 @@
 import subprocess, platform, zipfile, sys
 from pathlib import Path
 
-if sys.stdout.encoding != 'utf-8':
-    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+elif sys.stdout.encoding != 'utf-8':
+    # Fallback for older python or restricted environments
+    import io
+    try:
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    except Exception:
+        pass
 
 OS   = platform.system()
 NAME = {
@@ -58,7 +68,7 @@ def build():
             "--hidden-import=winreg",
         ]
 
-    print(f"[build] 正在打包 {NAME} ...")
+    print(f"[build] Packaging {NAME} ...")
     subprocess.run(cmd, check=True)
 
     # 打 zip
@@ -68,8 +78,8 @@ def build():
         z.write(out_exe, NAME)
         z.writestr("README.txt", _readme())
 
-    print(f"\n✅ 打包完成: {zip_path}")
-    print(f"   发给目标机器解压后直接运行 {NAME} 即可")
+    print(f"\n✅ Build completed: {zip_path}")
+    print(f"   Extract and run {NAME} on the target machine.")
 
 def _readme():
     return """\
