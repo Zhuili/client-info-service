@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+psutil
+netifaces
+pyinstaller
+pywin32; sys_platform == "win32"

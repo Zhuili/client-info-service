@@ -1,0 +1,49 @@
+name: Build Multi-Platform
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            name: client-info-setup.exe
+            artifact: client-info-setup-windows
+          - os: ubuntu-latest
+            name: client-info-setup-linux
+            artifact: client-info-setup-linux
+          - os: macos-14
+            name: client-info-setup-macos
+            artifact: client-info-setup-macos-arm64
+          - os: macos-13
+            name: client-info-setup-macos
+            artifact: client-info-setup-macos-intel
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pyinstaller fastapi "uvicorn[standard]" psutil netifaces
+
+      - name: Install pywin32 (Windows only)
+        if: runner.os == 'Windows'
+        run: pip install pywin32
+
+      - name: Build
+        run: python build.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/*.zip
