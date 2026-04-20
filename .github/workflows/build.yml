@@ -23,9 +23,6 @@ jobs:
           - os: macos-14
             name: client-info-setup-macos
             artifact: client-info-setup-macos-arm64
-          - os: macos-13
-            name: client-info-setup-macos
-            artifact: client-info-setup-macos-intel
 
     runs-on: ${{ matrix.os }}
 
